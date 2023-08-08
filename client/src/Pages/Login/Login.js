@@ -1,8 +1,37 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import PrimaryButton from '../../Components/Button/PrimaryButton'
+import { useContext } from 'react'
+import { AuthContext } from '../../contexts/AuthProvider'
+import { toast } from 'react-hot-toast'
 
 const Login = () => {
+  const {signInWithGoogle, signin, loading, setLoading} = useContext(AuthContext)
+  
+ const navigate = useNavigate()
+ const location = useLocation()
+ const from = location.state?.from?.pathname || '/'
+
+   const handleSubmit = event => {
+    event.preventDefault()
+    const email = event.target.email.value;
+    const password = event.target.password.value;
+
+    signin(email, password)
+    .then(res => {
+      toast.success('LogIn Successfully')
+      navigate(from, {replace:true})
+    })
+    .catch(err => {
+      toast.error('wrong password or email')
+      console.log(err);
+    })
+   }
+
+  const handleSignInGoogle = () => {
+    signInWithGoogle()
+    .then(res => console.log(res.user))
+  }
   return (
     <div className='flex justify-center items-center pt-8'>
       <div className='flex flex-col max-w-md p-6 rounded-md sm:p-10 bg-gray-100 text-gray-900'>
@@ -12,7 +41,7 @@ const Login = () => {
             Sign in to access your account
           </p>
         </div>
-        <form
+        <form onSubmit={handleSubmit}
           noValidate=''
           action=''
           className='space-y-6 ng-untouched ng-pristine ng-valid'
@@ -71,7 +100,7 @@ const Login = () => {
           <div className='flex-1 h-px sm:w-16 dark:bg-gray-700'></div>
         </div>
         <div className='flex justify-center space-x-4'>
-          <button aria-label='Log in with Google' className='p-3 rounded-sm'>
+          <button onClick={handleSignInGoogle} aria-label='Log in with Google' className='p-3 rounded-sm'>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               viewBox='0 0 32 32'

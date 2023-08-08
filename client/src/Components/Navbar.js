@@ -5,7 +5,7 @@ import { AuthContext } from '../contexts/AuthProvider'
 import PrimaryButton from '../Components/Button/PrimaryButton'
 
 const Navbar = () => {
-  const { user } = useContext(AuthContext)
+  const { user, logout } = useContext(AuthContext)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   return (
@@ -61,7 +61,7 @@ const Navbar = () => {
                     </Link>
 
                     <hr className='border-gray-200' />
-                    <div className='flex items-center cursor-pointer p-3 text-sm text-gray-600 capitalize transition-colors duration-200 transform  hover:bg-gray-100 '>
+                    <div onClick={logout} className='flex items-center cursor-pointer p-3 text-sm text-gray-600 capitalize transition-colors duration-200 transform  hover:bg-gray-100 '>
                       <svg
                         className='w-5 h-5 mx-1'
                         viewBox='0 0 24 24'

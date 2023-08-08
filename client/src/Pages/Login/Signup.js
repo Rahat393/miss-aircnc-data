@@ -1,9 +1,53 @@
-import React from 'react'
+import React, { useContext } from 'react'
 
 import { Link } from 'react-router-dom'
 import PrimaryButton from '../../Components/Button/PrimaryButton'
+import { AuthContext } from '../../contexts/AuthProvider'
+import { toast } from 'react-hot-toast'
 
 const Signup = () => {
+  const {createUser, updateUserProfile, verifyEmail, loading, setLoading, signInWithGoogle}
+   = useContext(AuthContext);
+   const handleSubmit = event => {
+    event.preventDefault()
+    const name = event.target.name.value;
+    const image = event.target.image.files[0];
+    const email = event.target.email.value;
+    const password = event.target.password.value;
+
+    const formData = new FormData()
+    formData.append('image', image)
+
+    const url = "https://api.imgbb.com/1/upload?=600&key=56254df64bb1258c8e5d55ac4f7da7dc"
+    
+    fetch(url, {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      createUser(email, password)
+      .then(result =>{ 
+        updateUserProfile(name, data.data.display_Url)
+        .then(
+          verifyEmail().then(() => {
+            toast.success('Please check your email for verivication Link')
+          })
+        )
+        console.log(result)
+      })
+      .catch(err => console.log(err))
+
+      console.log(data);  
+    })
+    .catch(err => console.log(err))
+   
+   }
+
+   const handleSignInGoogle = () => {
+    signInWithGoogle()
+    .then(res => console.log(res.user))
+   }
   return (
     <div className='flex justify-center items-center pt-8'>
       <div className='flex flex-col max-w-md p-6 rounded-md sm:p-10 bg-gray-100 text-gray-900'>
@@ -11,7 +55,7 @@ const Signup = () => {
           <h1 className='my-3 text-4xl font-bold'>Signup</h1>
           <p className='text-sm text-gray-400'>Create a new account</p>
         </div>
-        <form
+        <form onSubmit={handleSubmit}
           noValidate=''
           action=''
           className='space-y-12 ng-untouched ng-pristine ng-valid'
@@ -92,7 +136,7 @@ const Signup = () => {
           <div className='flex-1 h-px sm:w-16 dark:bg-gray-700'></div>
         </div>
         <div className='flex justify-center space-x-4'>
-          <button aria-label='Log in with Google' className='p-3 rounded-sm'>
+          <button onClick={handleSignInGoogle} aria-label='Log in with Google' className='p-3 rounded-sm'>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               viewBox='0 0 32 32'
